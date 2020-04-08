@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wpw.springbootmybatis.mapper.IdCardMapper">
+    <resultMap id="idCardOfUserMap" type="com.wpw.springbootmybatis.entity.IdCard">
+        <!--用户表与身份证表(一对一)映射-->
+        <id property="cardId" column="card_id"></id>
+        <result property="uid" column="uid"></result>
+        <!--一对一-->
+        <!--property 映射到列结果的字段或属性 | javaType- Java 类名-->
+        <association property="user" javaType="com.wpw.springbootmybatis.entity.User">
+            <id property="id" column="id"></id>
+            <result property="name" column="name"></result>
+        </association>
+    </resultMap>
+    <select id="selectIdOfUser" resultMap="idCardOfUserMap">
+        select *
+        from id_card i,
+             user u
+        where i.uid = u.id
+    </select>
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wpw.springbootmybatis.mapper.ComboMapper">
+    <resultMap id="comboMap" type="com.wpw.springbootmybatis.entity.Combo">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+    </resultMap>
+    <resultMap id="userMap" type="com.wpw.springbootmybatis.entity.Combo" extends="comboMap">
+        <!--一对多[ofType是映射到list集合属性中pojo的类型]-->
+        <collection property="userComboList" ofType="com.wpw.springbootmybatis.entity.UserCombo">
+            <result property="price" column="price"></result>
+            <!--一对多-->
+            <collection property="users" ofType="com.wpw.springbootmybatis.entity.User">
+                <id property="id" column="uid"></id>
+                <result property="name" column="uname"></result>
+                <!--一对多[ofType是映射到list集合属性中pojo的类型]-->
+                <collection property="phoneList" ofType="com.wpw.springbootmybatis.entity.Phone">
+                    <id property="id" column="pid"></id>
+                    <result property="name" column="pname"></result>
+                    <result property="number" column="number"></result>
+                </collection>
+            </collection>
+        </collection>
+    </resultMap>
+    <select id="selectUserById" parameterType="int" resultMap="userMap">
+        select c.*,
+               s.price,
+               u.id   uid,
+               u.name uname,
+               p.id   pid,
+               p.name pname,
+               p.number
+        from combo c,
+             user_combo s,
+             user u,
+             phone p
+        where c.id = s.cid
+          and s.uid = u.id
+          and u.id = p.uid
+          and c.id = #{id}
+    </select>
+</mapper>

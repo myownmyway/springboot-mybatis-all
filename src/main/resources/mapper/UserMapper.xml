@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wpw.springbootmybatis.mapper.UserMapper">
+    <select id="selectById" parameterType="int" resultType="com.wpw.springbootmybatis.entity.User">
+     select * from user where id=#{id}
+    </select>
+    <insert id="insert" parameterType="com.wpw.springbootmybatis.entity.User">
+     insert into user(name) values(#{name})
+    </insert>
+    <!--修改用户信息-->
+    <update id="update" parameterType="com.wpw.springbootmybatis.entity.User">
+        update user set name=#{name} where id=#{id}
+    </update>
+    <!--删除用户信息-->
+    <delete id="delete">
+        delete from user where id=#{id}
+    </delete>
+    <!--查询所有用户信息-->
+    <select id="list" resultType="com.wpw.springbootmybatis.entity.User">
+        select * from user
+    </select>
+    <!--根据id查询用户的所有电话信息-->
+    <resultMap id="phoneMap" type="com.wpw.springbootmybatis.entity.User">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <!--一对多[ofType是映射到list集合属性中pojo的类型]-->
+        <collection property="phoneList" ofType="com.wpw.springbootmybatis.entity.Phone">
+            <id property="id" column="pid"></id>
+            <result property="name" column="pname"></result>
+            <result property="number" column="number"></result>
+            <result property="uid" column="uid"></result>
+        </collection>
+    </resultMap>
+    <select id="selectPhoneById" resultMap="phoneMap" parameterType="int">
+     select u.*,p.id pid,p.name pname,p.uid from user u,phone p where u.id=p.uid and u.id=#{id}
+    </select>
+    <resultMap id="userMap" type="com.wpw.springbootmybatis.entity.User">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+    </resultMap>
+    <resultMap id="comboMap" type="com.wpw.springbootmybatis.entity.User" extends="userMap">
+        <!--一对多-->
+        <collection property="userComboList" ofType="com.wpw.springbootmybatis.entity.UserCombo">
+            <result property="price" column="price"/>
+            <result property="uid" column="uid"/>
+            <result property="cid" column="cid"/>
+            <!--一对多-->
+            <collection property="combos" ofType="com.wpw.springbootmybatis.entity.Combo">
+                <id property="id" column="cid"/>
+                <result property="name" column="cname"/>
+            </collection>
+        </collection>
+    </resultMap>
+    <select id="selectComboById" parameterType="int" resultMap="comboMap">
+        select u.*,b.price,b.uid,b.cid,c.id cid,c.name cname from user u,user_combo b, combo c 
+        where u.id=b.uid and b.cid=c.id and u.id=#{id}
+    </select>
+</mapper>
